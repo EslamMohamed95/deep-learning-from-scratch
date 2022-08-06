@@ -16,10 +16,7 @@ class NeuralNetwork(object):
                                                          (self.hidden_nodes, self.output_nodes))
         self.lr = learning_rate
 
-        def sigmoid(x):
-            return 1 / (1 + np.exp(-x))
-
-        self.activation_function = lambda x: sigmoid
+        self.activation_function = lambda x: 1.0 / (1.0 + np.exp(-x))
 
     def train(self, features, targets):
         ''' Train the network on batch of features and targets. 
@@ -99,8 +96,8 @@ class NeuralNetwork(object):
             n_records: number of records
 
         """
-        self.weights_hidden_to_output += None  # update hidden-to-output weights with gradient descent step
-        self.weights_input_to_hidden += None  # update input-to-hidden weights with gradient descent step
+        self.weights_hidden_to_output += self.lr*delta_weights_h_o/n_records  # update hidden-to-output weights with gradient descent step
+        self.weights_input_to_hidden += self.lr*delta_weights_i_h/n_records  # update input-to-hidden weights with gradient descent step
 
     def run(self, features):
         """ Run a forward pass through the network with input features
@@ -109,15 +106,17 @@ class NeuralNetwork(object):
             ---------
             features: 1D array of feature values
         """
+        # Hidden layer
         hidden_inputs = np.dot(features, self.weights_input_to_hidden)  # signals into hidden layer
         hidden_outputs = self.activation_function(hidden_inputs)  # signals from hidden layer
-        return np.dot(hidden_inputs, self.weights_input_to_hidden)  # singals into final output layer
+
+        return np.dot(hidden_outputs, self.weights_hidden_to_output)
 
 
 #########################################################
 # Set your hyperparameters here
 ##########################################################
-iterations = 100
-learning_rate = 0.1
-hidden_nodes = 2
+iterations = 5000
+learning_rate = .75
+hidden_nodes = 50
 output_nodes = 1
